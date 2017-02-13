@@ -1,6 +1,6 @@
+library(igraph)
 library(dplyr)
 library(reshape2)
-library(igraph)
 library(acss)
 
 source('compute_complexity.R')
@@ -22,12 +22,19 @@ num.graphs <- 50
 # possible values of edge rewiring probability
 edge.rewiring.probability <- 0:num.vertices/num.vertices
 
+# flag to mark whether the transition is from small world to random network
+transition.to.random <- TRUE
+
 results <- data.frame()
 
 for (erp in edge.rewiring.probability) {
   for (i in 1:num.graphs) {
-    g <- watts.strogatz.game(dim = 1, size = num.vertices, p = erp, nei = 2)
-    #g <- to_powerlaw(dim = 1, size = num.vertices, p = erp, nei = 2)
+    if (transition.to.random) {
+      g <- watts.strogatz.game(dim = 1, size = num.vertices, p = erp, nei = 2)
+    } else {
+      g <- to_powerlaw(dim = 1, size = num.vertices, p = erp, nei = 2)
+    }
+    
     results <- rbind(results, c(erp, compute_complexity(g)))
   }
 }
@@ -41,11 +48,13 @@ results <- results %>%
 
 results <- as.data.frame(apply(results, 2, normalize))
 
-print(results)
+if (transition.to.random) { 
+  file.name <- 'results.100.50.ws.er.csv' 
+} else {
+  file.name <- 'results.100.50.ws.b.csv' 
+}
+  
+write.csv(x = results, file = file.name, row.names = FALSE)
 
-results_long <- melt(results, id = 'p')
-
-plt <- ggplot(results_long, aes(x = p, y = value, color = variable)) + geom_line()
-plt
 
 
