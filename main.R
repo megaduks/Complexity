@@ -2,6 +2,8 @@ library(igraph)
 library(dplyr)
 library(reshape2)
 library(acss)
+library(ggplot2)
+library(ggnet)
 
 source('compute_complexity.R')
 source('to_powerlaw.R')
