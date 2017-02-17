@@ -4,6 +4,7 @@ library(reshape2)
 library(acss)
 library(ggplot2)
 library(ggnet)
+library(numbers)
 
 source('compute_complexity.R')
 source('to_powerlaw.R')
