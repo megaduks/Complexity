@@ -100,3 +100,30 @@ g <- simplify(graph_from_adjacency_matrix(adjacency.matrix, mode = 'undirected')
 
 # draw the graph
 ggnet2(simplify(g), mode = "segeo", size = "degree", alpha = 0.8, color = "royalblue")
+
+###### Block graph (concatenation of several transposed 3x3 matrices)
+
+# create initial 3x3 matrix
+m <- matrix(c(0,1,0,1,0,1,0,0,1), nrow = 3, ncol = 3)
+
+l <- list()
+
+# create several copies of the original and permuted matrix
+for (i in 1:64) {
+  if (runif(1) > 0.5) 
+    l[[i]] <- m
+  else
+    l[[i]] <- t(m)
+}
+
+# combine individual matrices into a single square matrix
+M <- m
+for (i in 2:length(l))
+  M <- cbind(M, l[[i]])
+dim(M) <- c(24,24)
+
+# create a graph based on the generated adjacency matrix
+g <- simplify(graph_from_adjacency_matrix(M, mode = 'undirected'))
+
+# draw the graph
+ggnet2(simplify(g), mode = "spring", alpha = 0.8, color = "yellowgreen")
