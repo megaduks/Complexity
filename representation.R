@@ -41,6 +41,8 @@ for (model in models) {
   }
 }
 
+write.csv(x = results, file = 'results.representation.csv', row.names = FALSE)
+
 max_string <- paste(letters[runif(10000,1,10)], collapse = '')
 min_string <- paste(rep('a', 10000), collapse = '')
 
@@ -54,10 +56,7 @@ results[, c(5,6,7)] <- (results[, c(5,6,7)] - min_complexity) / (max_complexity 
 
 results <- cbind(results, rowMeans(results[,2:4]), rowMeans(results[,5:7]))
 
-colnames(results) <- c('id','e_am','e_im','e_lap','k_am','k_im','k_lap','model','avg_e','avg_k')
+colnames(results) <- c('id','e_am','e_im','e_lap','k_am','k_im','k_lap','model','avgerage entropy','avgerage K-complexity')
 
-plot <- ggplot(melt(results[,c(1,8,9,10)], id = c('id','model')), aes(x = id, y = value, color = variable, linetype = variable)) + geom_smooth(se = FALSE) + facet_wrap(~ model, ncol = 1)
-plot
-
-plot <- ggplot(melt(results[,c(1:8)], id = c('id','model')), aes(x = id, y = value, color = variable, linetype = variable)) + geom_smooth(se = FALSE) + facet_wrap(~ model, ncol = 1)
+plot <- ggplot(melt(results[,c(1,8,9,10)], id = c('id','model')), aes(x = id, y = value, color = variable, linetype = variable)) + geom_smooth(alpha=0.2) + facet_wrap(~ model, ncol = 1) + theme_bw()
 plot

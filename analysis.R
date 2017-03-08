@@ -3,8 +3,8 @@ library(reshape2)
 library(ggplot2)
 
 # read text file with results
-#results <- read.csv(file = 'results.100.50.ws.er.csv')
-results <- read.csv(file = 'results.100.50.ws.b.csv')
+results <- read.csv(file = 'results.100.5.ws.er.csv')
+results <- read.csv(file = 'results.100.5.ws.b.csv')
 
 # normalize the results by comparing them with maximal entropy/complexity of strings of similar length
 max_string <- paste(letters[runif(10000,1,10)], collapse = '')
@@ -18,7 +18,6 @@ max_entropy <- entropy(max_string)
 results[, c(2,3,4,5)] <- (results[, c(2,3,4,5)] - min_entropy) / (max_entropy - min_entropy)
 results[, c(6,7,8,9)] <- (results[, c(6,7,8,9)] - min_complexity) / (max_complexity - min_complexity)
 
-results <- cbind(results, eMean = rowMeans(results[,2:5]), KMean = rowMeans(results[,6:9]))
 
 # transform the data into the long format
 results_long <- melt(results, id = 'p')
@@ -52,5 +51,12 @@ results_long$variable <- factor(results_long$variable, levels = c('eA','eL','ed'
 plt <- ggplot(results_long, aes(x = p, y = value, color = variable, linetype = variable)) + geom_line() + facet_wrap(~ type, ncol = 2) + theme_bw()
 plt
 
+# generate the plot of the average entropy and complexity across network features
+results <- cbind(results, eMean = rowMeans(results[,2:5]), KMean = rowMeans(results[,6:9]))
+
+plt <- ggplot(melt(results[,c(1,10,11)], id = 'p'), aes(x = p, y = value, color = variable, linetype = variable)) + geom_smooth(alpha=0.2) + theme_bw()
+plt
+
 # save the plot
-ggsave(filename = 'results.100.50.ws.b.png')
+#ggsave(filename = 'results.100.100.ws.er.png')
+#ggsave(filename = 'results.100.100.ws.ba.png')

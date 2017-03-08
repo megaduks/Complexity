@@ -14,7 +14,7 @@ source('to_random.R')
 num.vertices <- 100
 
 # number of graphs sampled for each value of the edge rewiring probability
-num.graphs <- 100
+num.graphs <- 5
 
 # possible values of edge rewiring probability
 edge.rewiring.probability <- 0:num.vertices/num.vertices
@@ -34,9 +34,9 @@ for (transition.to.random in c(TRUE, FALSE)) {
     for (erp in edge.rewiring.probability) {
     
       if (transition.to.random) {
-        g <- to_random(graph = g, p = erp)
+        g <- to_random(graph = g, p = 0.01)
       } else {
-        g <- to_powerlaw(graph = g, p = erp)
+        g <- to_powerlaw(graph = g, p = 0.01)
       }
       
       results <- rbind(results, c(erp, compute_complexity(g)))
@@ -53,9 +53,9 @@ for (transition.to.random in c(TRUE, FALSE)) {
   #results <- as.data.frame(apply(results, 2, normalize))
   
   if (transition.to.random) { 
-    file.name <- 'results.100.50.ws.er.csv' 
+    file.name <- 'results.100.5.ws.er.csv' 
   } else {
-    file.name <- 'results.100.50.ws.b.csv' 
+    file.name <- 'results.100.5.ws.b.csv' 
   }
     
   write.csv(x = results, file = file.name, row.names = FALSE)
