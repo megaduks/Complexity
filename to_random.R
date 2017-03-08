@@ -1,16 +1,16 @@
 # 
-# Function to gradually transform a small world graph into a powerlaw graph
+# Function to gradually transform a small world graph into a random network
 #
 # author: Mikołaj Morzy
-# date: 11.02.2017
+# date: 8.03.2017
 #
 # The purpose of this function is to slowly change a small world graph
-# into a powerlaw graph. The procedure is as follows:
+# into a random network. The procedure is as follows:
 #
 # TODO
 #
 
-to_powerlaw <- function(graph, p) {
+to_random <- function(graph, p) {
   
   g <- graph
   edge.list <- get.edgelist(g)
@@ -25,13 +25,12 @@ to_powerlaw <- function(graph, p) {
       g <- g - edge(paste(from.vertex,"|",to.vertex))
       
       # select new target vertex
-      new.vertex <- as.numeric(sample(V(g), 1, prob = degree(g, normalized = TRUE)))
+      new.vertex <- as.numeric(sample(V(g), 1))
       
       # add new edge to the graph
       g <- g + edge(from.vertex, new.vertex)
     }
   }
-  
   
   return(g)
 }

@@ -3,7 +3,23 @@ library(reshape2)
 library(ggplot2)
 
 # read text file with results
+#results <- read.csv(file = 'results.100.50.ws.er.csv')
 results <- read.csv(file = 'results.100.50.ws.b.csv')
+
+# normalize the results by comparing them with maximal entropy/complexity of strings of similar length
+max_string <- paste(letters[runif(10000,1,10)], collapse = '')
+min_string <- paste(rep('a', 10000), collapse = '')
+
+min_complexity <- mean(unlist(local_complexity(min_string, span = 10)), na.rm = TRUE)
+max_complexity <- mean(unlist(local_complexity(max_string, span = 10)), na.rm = TRUE)
+min_entropy <- entropy(min_string)
+max_entropy <- entropy(max_string)
+
+results[, c(2,3,4,5)] <- (results[, c(2,3,4,5)] - min_entropy) / (max_entropy - min_entropy)
+results[, c(6,7,8,9)] <- (results[, c(6,7,8,9)] - min_complexity) / (max_complexity - min_complexity)
+
+results <- cbind(results, eMean = rowMeans(results[,2:5]), KMean = rowMeans(results[,6:9]))
+
 # transform the data into the long format
 results_long <- melt(results, id = 'p')
 
