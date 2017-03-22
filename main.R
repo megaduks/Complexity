@@ -14,29 +14,32 @@ source('to_random.R')
 num.vertices <- 100
 
 # number of graphs sampled for each value of the edge rewiring probability
-num.graphs <- 5
+num.graphs <- 50
 
 # possible values of edge rewiring probability
-edge.rewiring.probability <- 0:num.vertices/num.vertices
+#edge.rewiring.probability <- 0:num.vertices/num.vertices
+edge.rewiring.probability <- seq(0, 1, by=0.05)
 
 # flag to mark whether the transition is from small world to random network
 transition.to.random <- TRUE
 
 results <- data.frame()
+graphs <- list()
 
-for (transition.to.random in c(TRUE, FALSE)) {
+for (transition.to.random in c(TRUE)) {
 
   for (i in 1:num.graphs) {
     
     # the initial perfect WS graph with no edge rewiring
     g <- watts.strogatz.game(dim = 1, size = num.vertices, p = 0, nei = 2)
+    E(g)$rewired <- FALSE
     
     for (erp in edge.rewiring.probability) {
     
       if (transition.to.random) {
-        g <- to_random(graph = g, p = 0.01)
+        g <- to_random(graph = g, p = 0.05)
       } else {
-        g <- to_powerlaw(graph = g, p = 0.01)
+        g <- to_powerlaw(graph = g, p = 0.05)
       }
       
       results <- rbind(results, c(erp, compute_complexity(g)))
@@ -50,12 +53,10 @@ for (transition.to.random in c(TRUE, FALSE)) {
     group_by(p) %>%
     summarise_all(funs(mean))
   
-  #results <- as.data.frame(apply(results, 2, normalize))
-  
   if (transition.to.random) { 
-    file.name <- 'results.100.5.ws.er.csv' 
+    file.name <- 'results.100.50.ws.er.csv' 
   } else {
-    file.name <- 'results.100.5.ws.b.csv' 
+    file.name <- 'results.100.50.ws.ba.csv' 
   }
     
   write.csv(x = results, file = file.name, row.names = FALSE)

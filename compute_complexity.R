@@ -12,6 +12,28 @@
 # - vertex degree list
 # - degree distribution
 
+normalize_complexity <- function(value, str_length, type) {
+  n <- str_length
+  
+  # normalize the results by comparing them with maximal entropy/complexity of strings of similar length
+  max_string <- paste(letters[runif(n,1,10)], collapse = '')
+  min_string <- paste(rep('a', n), collapse = '')
+  
+  min_complexity <- sum(unlist(local_complexity(min_string, span = 10)), na.rm = TRUE)
+  max_complexity <- sum(unlist(local_complexity(max_string, span = 10)), na.rm = TRUE)
+  min_entropy <- entropy(min_string)[[1]]
+  max_entropy <- entropy(max_string)[[1]]
+  
+  if (type == 0) {
+    result <- (value - min_entropy) / (max_entropy - min_entropy)
+  }
+  else {
+    result <- (value - min_complexity) / (max_complexity - min_complexity)
+  }
+  
+  result
+}
+
 compute_complexity <- function(g) {
   
   # compute properties of a graph
@@ -38,10 +60,20 @@ compute_complexity <- function(g) {
   eD <- entropy(sD)[[1]]
   
   # compute Kolmogorov complexity of graph properties
-  kA <- mean(unlist(local_complexity(sA, span = 10)), na.rm = TRUE)
-  kL <- mean(unlist(local_complexity(sL, span = 10)), na.rm = TRUE)
-  kd <- mean(unlist(local_complexity(sd, span = 10)), na.rm = TRUE)
-  kD <- mean(unlist(local_complexity(sD, span = 10)), na.rm = TRUE)
+  kA <- sum(unlist(local_complexity(sA, span = 10)), na.rm = TRUE)
+  kL <- sum(unlist(local_complexity(sL, span = 10)), na.rm = TRUE)
+  kd <- sum(unlist(local_complexity(sd, span = 10)), na.rm = TRUE)
+  kD <- sum(unlist(local_complexity(sD, span = 10)), na.rm = TRUE)
+  
+  eA <- normalize_complexity(eA, nchar(sA), 0)
+  eL <- normalize_complexity(eL, nchar(sL), 0)
+  ed <- normalize_complexity(ed, nchar(sd), 0)
+  eD <- normalize_complexity(eD, nchar(sD), 0)
+  
+  kA <- normalize_complexity(kA, nchar(sA), 1)
+  kL <- normalize_complexity(kL, nchar(sL), 1)
+  kd <- normalize_complexity(kd, nchar(sd), 1)
+  kD <- normalize_complexity(kD, nchar(sD), 1)
   
   result <- c(eA, eL, ed, eD, kA, kL, kd, kD)
   
